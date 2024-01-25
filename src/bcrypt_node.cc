@@ -94,13 +94,16 @@ namespace {
     Napi::Value GenerateSalt(const Napi::CallbackInfo& info) {
         Napi::Env env = info.Env();
         if (info.Length() < 4) {
-            throw Napi::TypeError::New(env, "4 arguments expected");
+            Napi::TypeError::New(env, "4 arguments expected");
+            return Napi::Value();
         }
         if (!info[0].IsString()) {
-            throw Napi::TypeError::New(env, "First argument must be a string");
+            Napi::TypeError::New(env, "First argument must be a string");
+            return  Napi::Value();
         }
         if (!info[2].IsBuffer() || (info[2].As<Napi::Buffer<char>>()).Length() != 16) {
-            throw Napi::TypeError::New(env, "Second argument must be a 16 byte Buffer");
+            Napi::TypeError::New(env, "Second argument must be a 16 byte Buffer");
+            return  Napi::Value();
         }
 
         const char minor_ver = ToCharVersion(info[0].As<Napi::String>());
@@ -115,13 +118,16 @@ namespace {
     Napi::Value GenerateSaltSync(const Napi::CallbackInfo& info) {
         Napi::Env env = info.Env();
         if (info.Length() < 3) {
-            throw Napi::TypeError::New(env, "3 arguments expected");
+            Napi::TypeError::New(env, "3 arguments expected");
+            return Napi::Value();
         }
         if (!info[0].IsString()) {
-            throw Napi::TypeError::New(env, "First argument must be a string");
+            Napi::TypeError::New(env, "First argument must be a string");
+            return Napi::Value();
         }
         if (!info[2].IsBuffer() || (info[2].As<Napi::Buffer<char>>()).Length() != 16) {
-            throw Napi::TypeError::New(env, "Third argument must be a 16 byte Buffer");
+            Napi::TypeError::New(env, "Third argument must be a 16 byte Buffer");
+            return Napi::Value();
         }
         const char minor_ver = ToCharVersion(info[0].As<Napi::String>());
         const int32_t rounds = info[1].As<Napi::Number>();
@@ -165,7 +171,8 @@ namespace {
 
     Napi::Value Encrypt(const Napi::CallbackInfo& info) {
         if (info.Length() < 3) {
-            throw Napi::TypeError::New(info.Env(), "3 arguments expected");
+            Napi::TypeError::New(info.Env(), "3 arguments expected");
+            return Napi::Value();
         }
         std::string data = info[0].IsBuffer()
             ? BufferToString(info[0].As<Napi::Buffer<char>>())
@@ -180,14 +187,16 @@ namespace {
     Napi::Value EncryptSync(const Napi::CallbackInfo& info) {
         Napi::Env env = info.Env();
         if (info.Length() < 2) {
-            throw Napi::TypeError::New(info.Env(), "2 arguments expected");
+            Napi::TypeError::New(info.Env(), "2 arguments expected");
+            return Napi::Value();
         }
         std::string data = info[0].IsBuffer()
             ? BufferToString(info[0].As<Napi::Buffer<char>>())
             : info[0].As<Napi::String>();
         std::string salt = info[1].As<Napi::String>();
         if (!(ValidateSalt(salt.c_str()))) {
-            throw Napi::Error::New(env, "Invalid salt. Salt must be in the form of: $Vers$log2(NumRounds)$saltvalue");
+            Napi::Error::New(env, "Invalid salt. Salt must be in the form of: $Vers$log2(NumRounds)$saltvalue");
+            return Napi::Value();
         }
         char bcrypted[_PASSWORD_LEN];
         bcrypt(data.c_str(), data.length(), salt.c_str(), bcrypted);
@@ -229,7 +238,8 @@ namespace {
 
     Napi::Value Compare(const Napi::CallbackInfo& info) {
         if (info.Length() < 3) {
-                throw Napi::TypeError::New(info.Env(), "3 arguments expected");
+            Napi::TypeError::New(info.Env(), "3 arguments expected");
+            return Napi::Value();
         }
         std::string input = info[0].IsBuffer()
             ? BufferToString(info[0].As<Napi::Buffer<char>>())
@@ -244,7 +254,8 @@ namespace {
     Napi::Value CompareSync(const Napi::CallbackInfo& info) {
         Napi::Env env = info.Env();
         if (info.Length() < 2) {
-            throw Napi::TypeError::New(info.Env(), "2 arguments expected");
+            Napi::TypeError::New(info.Env(), "2 arguments expected");
+            return Napi::Value();
         }
         std::string pw = info[0].IsBuffer()
             ? BufferToString(info[0].As<Napi::Buffer<char>>())
@@ -262,12 +273,14 @@ namespace {
     Napi::Value GetRounds(const Napi::CallbackInfo& info) {
         Napi::Env env = info.Env();
         if (info.Length() < 1) {
-            throw Napi::TypeError::New(env, "1 argument expected");
+            Napi::TypeError::New(env, "1 argument expected");
+            return Napi::Value();
         }
         std::string hash =  info[0].As<Napi::String>();
         u_int32_t rounds;
         if (!(rounds = bcrypt_get_rounds(hash.c_str()))) {
-            throw Napi::Error::New(env, "invalid hash provided");
+            Napi::Error::New(env, "invalid hash provided");
+            return Napi::Value();
         }
         return Napi::Number::New(env, rounds);
     }
