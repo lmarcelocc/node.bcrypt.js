@@ -12,6 +12,7 @@
       ],
       'defines': [
             '_GNU_SOURCE',
+            'NAPI_DISABLE_CPP_EXCEPTIONS',
       ],
       'cflags!': [ '-fno-exceptions' ],
       'cflags_cc!': [ '-fno-exceptions' ],
@@ -37,7 +38,6 @@
             'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
             'GCC_SYMBOLS_PRIVATE_EXTERN': 'YES', # -fvisibility=hidden
           },
-          'defines': ["NAPI_DISABLE_CPP_EXCEPTIONS"],
         }],
         ['OS=="zos" and NODE_VERSION <= 16',{
             'cflags': [
